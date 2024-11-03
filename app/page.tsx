@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +18,21 @@ export default function Home() {
   const [packages, setPackages] = useState<GoldPackage[]>([])
   const [gold, setGold] = useState('')
   const [price, setPrice] = useState('')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('goldPackages')
+    if (saved) {
+      setPackages(JSON.parse(saved))
+    }
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem('goldPackages', JSON.stringify(packages))
+    }
+  }, [packages, isClient])
 
   const addPackage = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,6 +56,10 @@ export default function Home() {
   }
 
   const sortedPackages = [...packages].sort((a, b) => a.unitCost - b.unitCost)
+
+  if (!isClient) {
+    return null
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4">
