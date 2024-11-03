@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +19,7 @@ export default function Home() {
   const [gold, setGold] = useState('')
   const [price, setPrice] = useState('')
   const [isClient, setIsClient] = useState(false)
+  const goldInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('goldPackages')
@@ -48,6 +49,7 @@ export default function Home() {
       setPackages([...packages, newPackage])
       setGold('')
       setPrice('')
+      goldInputRef.current?.focus()
     }
   }
 
@@ -70,6 +72,7 @@ export default function Home() {
         <CardContent>
           <form onSubmit={addPackage} className="flex space-x-2 mb-4">
             <Input
+              ref={goldInputRef}
               type="number"
               placeholder="Gold amount"
               value={gold}
