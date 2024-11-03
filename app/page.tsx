@@ -20,6 +20,7 @@ export default function Home() {
   const [price, setPrice] = useState('')
   const [isClient, setIsClient] = useState(false)
   const goldInputRef = useRef<HTMLInputElement>(null)
+  const [recentlyAddedId, setRecentlyAddedId] = useState<number | null>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('goldPackages')
@@ -40,8 +41,9 @@ export default function Home() {
     const goldAmount = parseFloat(gold)
     const priceAmount = parseFloat(price)
     if (goldAmount > 0 && priceAmount > 0) {
+      const newId = Date.now()
       const newPackage: GoldPackage = {
-        id: Date.now(),
+        id: newId,
         gold: goldAmount,
         price: priceAmount,
         unitCost: priceAmount / goldAmount
@@ -50,6 +52,9 @@ export default function Home() {
       setGold('')
       setPrice('')
       goldInputRef.current?.focus()
+      
+      setRecentlyAddedId(newId)
+      setTimeout(() => setRecentlyAddedId(null), 1000)
     }
   }
 
@@ -105,7 +110,13 @@ export default function Home() {
               </TableHeader>
               <TableBody>
                 {sortedPackages.map((pkg) => (
-                  <TableRow key={pkg.id} className={pkg.unitCost === sortedPackages[0].unitCost ? "font-bold" : ""}>
+                  <TableRow 
+                    key={pkg.id} 
+                    className={`
+                      ${pkg.unitCost === sortedPackages[0].unitCost ? "font-bold" : ""}
+                      ${pkg.id === recentlyAddedId ? "animate-highlight bg-green-100" : ""}
+                    `}
+                  >
                     <TableCell>{pkg.gold}</TableCell>
                     <TableCell>{pkg.price.toFixed(2)}</TableCell>
                     <TableCell>{pkg.unitCost.toFixed(4)}</TableCell>
